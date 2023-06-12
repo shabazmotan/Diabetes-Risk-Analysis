@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Diabetes Risk Prediction</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='Diabetes_Risk_Calculator.jpg') }}" alt="Banner" class="banner">
+        <h1>Diabetes Risk Indicator Form</h1>
+    </header>
+
+    <div>
+        <form id="riskForm" method="POST">
+            <br>
+    <label for="HighBP">What is your blood pressure reading?</label>
+    <select id="HighBP" name="HighBP">
+      <option value="" disabled selected>Select</option>
+      <option value="0">Under 140 mmHg</option>
+      <option value="1">Higher than 140 mmHg</option>
+    </select>
+    <br>
+    <label for="CholCheck">Have you checked your cholestrol level in the last 5 years?</label>
+    <select id="CholCheck" name="CholCheck">
+      <option value="" disabled selected>Select</option>
+      <option value="0">No</option>
+      <option value="1">Yes</option>
+    </select>
+    <br>
+    <label for="HighChol">If "Yes", how is your cholesterol level? If "No", take a guess.</label>
+    <select id="HighChol" name="HighChol">
+      <option value="" disabled selected>Select</option>
+      <option value="0">Under 130 mg/dL</option>
+      <option value="1">Higher than 130 mg/dL</option>
+    </select>
+    <br>
+    <label for="BMI">What is your body mass index (BMI)?</label>
+    <select id="BMI" name="BMI">
+      <option value="" disabled selected>Select</option>
+      <option value="0">below 26</option>
+      <option value="1">equal to or higher than 26</option>
+    </select>
+    <br>
+    <label for="Smoker">Do you smoke?</label>
+    <select id="Smoker" name="Smoker">
+      <option value="" disabled selected>Select</option>
+      <option value="0">non-Smoker</option>
+      <option value="1">Smoker</option>
+    </select>
+    <br>
+    <label for="Stroke">Have you had a stroke before?</label>
+    <select id="Stroke" name="Stroke">
+      <option value="" disabled selected>Select</option>
+      <option value="0">No</option>
+      <option value="1">Yes</option>
+    </select>
+    <br>
+    <label for="HeartDiseaseorAttack">Do have a heart disease or have you suffered from a heart attack?</label>
+    <select id="HeartDiseaseorAttack" name="HeartDiseaseorAttack">
+      <option value="" disabled selected>Select</option>
+      <option value="0">No</option>
+      <option value="1">Yes</option>
+    </select>
+    <br>
+    <label for="PhysActivity">Have you been physically active in the last 30 days?</label>
+    <select id="PhysActivity" name="PhysActivity">
+      <option value="" disabled selected>Select</option>
+      <option value="0">No</option>
+      <option value="1">Yes</option>
+    </select>
+    <br>
+    <label for="Fruits">How often do you eat fruits?</label>
+    <select id="Fruits" name="Fruits">
+      <option value="" disabled selected>Select</option>
+      <option value="0">Not Everyday</option>
+      <option value="1">Everyday</option>
+    </select>
+    <br>
+    <label for="Veggies"> How often do you eat vegetables?</label>
+    <select id="Veggies" name="Veggies">
+      <option value="" disabled selected>Select</option>
+      <option value="0">Not Everyday</option>
+      <option value="1">Everyday</option>
+    </select>
+    <br>
+    <label for="HvyAlcoholConsump">How often do you drink alcohol?</label>
+    <select id="HvyAlcoholConsump" name="HvyAlcoholConsump">
+      <option value="" disabled selected>Select</option>
+      <option value="0">Not Everyday</option>
+      <option value="1">Everyday</option>
+    </select>
+    <br>
+    <label for="AnyHealthcare">Do you have access to healthcare or can you afford healthcare?</label>
+    <select id="AnyHealthcare" name="AnyHealthcare">
+      <option value="" disabled selected>Select</option>
+      <option value="0">No</option>
+      <option value="1">Yes</option>
+    </select>
+    <br>
+    <label for="NoDocbcCost"> True or False "I have not seen a doctor when needed in the past year because of cost."</label>
+    <select id="NoDocbcCost" name="NoDocbcCost">
+      <option value="" disabled selected>Select</option>
+      <option value="0">False</option>
+      <option value="1">True</option>
+    </select>
+    <br>
+    <label for="DiffWalk">Do you have difficult walking?</label>
+    <select id="DiffWalk" name="DiffWalk">
+      <option value="" disabled selected>Select</option>
+      <option value="0">No</option>
+      <option value="1">Yes</option>
+    </select>
+    <br>
+    <label for="Sex">Sex</label>
+    <select id="Sex" name="Sex">
+      <option value="" disabled selected>Select</option>
+      <option value="0">Female</option>
+      <option value="1">Male</option>
+    </select>
+    <br>
+    <input type="submit" value="Submit">
+        </form>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+          var form = document.getElementById("riskForm");
+  
+          form.addEventListener('submit', function (event) {
+              event.preventDefault();
+  
+              var request = new XMLHttpRequest();
+              request.open("POST", "/result", true);
+              request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+  
+              request.onload = function () {
+                  if (request.status >= 200 && request.status < 400) {
+                      var response = JSON.parse(request.responseText);
+                      var result = response.prediction;
+                      var message = "You are at a " + result + " of developing diabetes. This is not a diagnosis. Please speak to your healthcare provider if you have any concerns. Visit https://diabetes.org/ for more information and resources.";
+  
+                      alert(message);
+                  } else {
+                      console.error("Error in request");
+                  }
+              };
+  
+              request.onerror = function () {
+                  console.error("Request failed");
+              };
+  
+              var formData = new FormData(form);
+              var data = new URLSearchParams(formData).toString();
+  
+              request.send(data);
+          });
+      });
+  </script>
+</body>
+</html>
